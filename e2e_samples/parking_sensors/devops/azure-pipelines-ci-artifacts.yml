@@ -8,6 +8,7 @@ trigger:
     - e2e_samples/parking_sensors/*
 
 pr: none
+pool: Default
 
 variables:
   basePath: 'e2e_samples/parking_sensors'
@@ -27,8 +28,8 @@ stages:
   jobs:
   - job: 'publish_python_packages'
     displayName: 'Publish Python Packages'
-    pool:
-      vmImage: 'Ubuntu-16.04'
+    # pool:
+    #   vmImage: 'Ubuntu-16.04'
     steps:
     - task: UsePythonVersion@0
       inputs:
@@ -54,8 +55,8 @@ stages:
   - job: 'publish_static_artifacts'
     dependsOn: 'publish_python_packages'
     displayName: 'Publish Static Artifacts'
-    pool:
-      vmImage: 'Ubuntu-16.04'
+    # pool:
+    #   vmImage: 'Ubuntu-16.04'
     steps:
     - task: PublishBuildArtifacts@1
       inputs:
