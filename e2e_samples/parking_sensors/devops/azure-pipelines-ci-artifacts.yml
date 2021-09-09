@@ -33,7 +33,7 @@ stages:
     steps:
     - task: UsePythonVersion@0
       inputs:
-        versionSpec: '3.6'
+        versionSpec: '3.9'
         architecture: 'x64'
 
     - script: pip install -r requirements_dev.txt && pip install -r requirements.txt
@@ -73,8 +73,8 @@ stages:
   - job: 'publish_sql_packages'
     dependsOn: 'publish_static_artifacts'
     displayName: 'Publish SQL Packages'
-    pool:
-      vmImage: 'windows-latest'
+    # pool:
+    #   vmImage: 'windows-latest'
     steps:
     - task: NuGetToolInstaller@1
 
