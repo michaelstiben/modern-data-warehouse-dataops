@@ -180,12 +180,10 @@ stor_id=$(az storage account show \
     --resource-group "$resource_group_name" \
     --output json |
     jq -r '.id')
+echo "stor_id var"
+echo $stor_id
 sp_stor_name="${PROJECT}-stor-${ENV_NAME}-${DEPLOYMENT_ID}-sp"
-sp_stor_out=$(az ad sp create-for-rbac \
-    --role "Storage Blob Data Contributor" \
-    --scopes "$stor_id" \
-    --name "$sp_stor_name" \
-    --output json)
+sp_stor_out=$(az ad sp create-for-rbac --role "Storage Blob Data Contributor" --scopes "$stor_id" --name "$sp_stor_name"  --output json)
 
 # store storage service principal details in Keyvault
 sp_stor_id=$(echo "$sp_stor_out" | jq -r '.appId')
@@ -217,7 +215,7 @@ DATABRICKS_TOKEN=$databricks_aad_token \
 DATABRICKS_HOST=$databricks_host \
 KEYVAULT_DNS_NAME=$kv_dns_name \
 KEYVAULT_RESOURCE_ID=$(echo "$arm_output" | jq -r '.properties.outputs.keyvault_resource_id.value') \
-    bash -c "./scripts/configure_databricks.sh"
+    bash -c ". ./scripts/configure_databricks.sh"
 
 
 
@@ -243,15 +241,11 @@ AZURE_SUBSCRIPTION_ID=$AZURE_SUBSCRIPTION_ID \
 RESOURCE_GROUP_NAME=$resource_group_name \
 DATAFACTORY_NAME=$datafactory_name \
 ADF_DIR=$adfTempDir \
-    bash -c "./scripts/deploy_adf_artifacts.sh"
+    bash -c ". ./scripts/deploy_adf_artifacts.sh"
 
 # ADF SP for integration tests
 sp_adf_name="${PROJECT}-adf-${ENV_NAME}-${DEPLOYMENT_ID}-sp"
-sp_adf_out=$(az ad sp create-for-rbac \
-    --role "Data Factory contributor" \
-    --scopes "/subscriptions/$AZURE_SUBSCRIPTION_ID/resourceGroups/$resource_group_name/providers/Microsoft.DataFactory/factories/$datafactory_name" \
-    --name "$sp_adf_name" \
-    --output json)
+sp_adf_out=$(az ad sp create-for-rbac --role "Data Factory contributor" --scopes "/subscriptions/$AZURE_SUBSCRIPTION_ID/resourceGroups/$resource_group_name/providers/Microsoft.DataFactory/factories/$datafactory_name" --name "$sp_adf_name" --output json)
 sp_adf_id=$(echo "$sp_adf_out" | jq -r '.appId')
 sp_adf_pass=$(echo "$sp_adf_out" | jq -r '.password')
 sp_adf_tenant=$(echo "$sp_adf_out" | jq -r '.tenant')
@@ -271,7 +265,7 @@ PROJECT=$PROJECT \
 ENV_NAME=$ENV_NAME \
 RESOURCE_GROUP_NAME=$resource_group_name \
 DEPLOYMENT_ID=$DEPLOYMENT_ID \
-    bash -c "./scripts/deploy_azdo_service_connections_azure.sh"
+    bash -c ". ./scripts/deploy_azdo_service_connections_azure.sh"
 
 # AzDO Variable Groups
 PROJECT=$PROJECT \
@@ -293,7 +287,7 @@ DATAFACTORY_NAME=$datafactory_name \
 SP_ADF_ID=$sp_adf_id \
 SP_ADF_PASS=$sp_adf_pass \
 SP_ADF_TENANT=$sp_adf_tenant \
-    bash -c "./scripts/deploy_azdo_variables.sh"
+    bash -c ". ./scripts/deploy_azdo_variables.sh"
 
 
 ####################

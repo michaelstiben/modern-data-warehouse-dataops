@@ -77,13 +77,15 @@ if [[ -n $prefix ]]; then
 
             echo "Delete service principal the start with '$prefix' in name, created by yourself..."
             [[ -n $prefix ]] &&
-                az ad sp list --query "[?contains(appDisplayName,'$prefix')].appId" -o tsv --show-mine | 
-                xargs -r -I % az ad sp delete --id %
+                az ad sp list --query "[?contains(appDisplayName,'$prefix')].appId" -o json --show-mine | 
+                jq -r '.[]' | 
+                xargs -t -r -I % az ad sp delete --id %
 
             echo "Delete resource group the start with '$prefix' in name..."
             [[ -n $prefix ]] &&
-                az group list --query "[?contains(name,'$prefix') && ! contains(name,'dbw')].name" -o tsv |
-                xargs -I % az group delete --verbose --name % -y
+                az group list --query "[?contains(name,'$prefix') && ! contains(name,'dbw')].name" -o json | 
+                jq -r '.[]' |
+                xargs -t -r -I % az group delete --verbose --name % -y
             ;;
         *)
             exit
