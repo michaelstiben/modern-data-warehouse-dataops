@@ -1,4 +1,5 @@
 #!/bin/bash
+#!/bin/bash/env
 
 # Access granted under MIT Open Source License: https://en.wikipedia.org/wiki/MIT_License
 #
